@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "build:phaser": "tsc && vite build --config vite/config.prod.ts",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
@@ -12,6 +13,7 @@
     "node": "v20.9.0"
   },
   "dependencies": {
+    "@discord/embedded-app-sdk": "^1.2.0",
     "axios": "^1.6.8",
     "phaser": "^3.55.2",
     "socket.io-client": "^4.7.5"

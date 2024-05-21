@@ -57,8 +57,8 @@ export class MainScene extends Phaser.Scene {
       {
         key: 'char11',
         assets: {
-          img: 'src/assets/chars/char11.png',
-          json: 'src/assets/chars/char11.json'
+          img: 'public/assets/chars/char11.png',
+          json: 'public/assets/chars/char11.json'
         },
         anims: [
           {
@@ -83,8 +83,8 @@ export class MainScene extends Phaser.Scene {
       {
         key: 'char14',
         assets: {
-          img: 'src/assets/chars/char14.png',
-          json: 'src/assets/chars/char14.json'
+          img: 'public/assets/chars/char14.png',
+          json: 'public/assets/chars/char14.json'
         },
         anims: [
           {

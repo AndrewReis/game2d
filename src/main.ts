@@ -1,5 +1,8 @@
 // dependencies
 import 'phaser';
+
+import { initiateDiscordSDK } from './utils/discordSdk';
+
 import './style.css'
 
 // scenes
@@ -20,5 +23,6 @@ export class Game extends Phaser.Game {
 }
 
 window.addEventListener('load', () => {
+  initiateDiscordSDK();
   (window as any)._game = new Game(GameConfig);
 });
