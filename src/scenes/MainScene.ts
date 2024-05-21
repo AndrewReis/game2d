@@ -1,7 +1,5 @@
 import 'phaser';
 
-import { responsiveScreenHelper } from '../helpers/responsive-helper';
-
 import { ICharacter } from '../types/characters'
 import { ALIGN } from '../config';
 
@@ -76,8 +74,8 @@ export class MainScene extends Phaser.Scene {
         energy: 100,
         owner: true,
         skills: [
-          { name: 'Ataque',  damage: 50, cost: 30 },
-          { name: 'Recarregar',  damage: 0, cost: 0 },
+          { name: 'Ataque', damage: 50, cost: 30 },
+          { name: 'Recarregar', damage: 0, cost: 0 },
         ]
       },
       {
@@ -106,15 +104,6 @@ export class MainScene extends Phaser.Scene {
         ]
       }
     ];
-  }
-
-  preload() {
-    this.load.setPath('assets');
-    responsiveScreenHelper(this);
-
-    for (const char of this.characters) {
-      this.load.atlas(char.key, char.assets.img, char.assets.json);
-    }
   }
 
   create() {
@@ -225,7 +214,7 @@ export class MainScene extends Phaser.Scene {
         this.nextTurn();
         return;
       }
-  
+
       if (this.currentCharacter.energy >= this.currentCharacter.skillSelected.cost) {
         this.characters.forEach(char => {
           if (char.key === this.currentCharacter.key) {
