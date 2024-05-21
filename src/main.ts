@@ -1,28 +1,22 @@
 // dependencies
-import 'phaser';
+import { Game, Types } from "phaser";
+
+import '/public/assets/style.css';
 
 import { initiateDiscordSDK } from './utils/discordSdk';
 
-import './style.css'
-
 // scenes
-import { MainScene }  from './scenes/MainScene';
+import { MainScene } from './scenes/MainScene';
 
+// config
 import { GameConfig } from './config'
 
-export class Game extends Phaser.Game {
-  constructor(config: Phaser.Types.Core.GameConfig) {
-    super(config);
-
-    // scenes
-    this.scene.add('Main', MainScene);
-
-    // start
-    this.scene.start('Main');
-  }
-}
-
-window.addEventListener('load', () => {
+(async () => {
   initiateDiscordSDK();
-  (window as any)._game = new Game(GameConfig);
-});
+  const config: Types.Core.GameConfig = {
+    ...GameConfig,
+    scene: [MainScene]
+  };
+
+  new Game(config);
+})();

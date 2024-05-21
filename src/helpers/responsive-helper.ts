@@ -21,6 +21,4 @@ export const responsiveScreenHelper = (scene: Phaser.Scene) => {
   sizer.setSize(scene.scale.gameSize.width, scene.scale.gameSize.height);
 
   _updateCamera(scene, parent, sizer);
-
-  scene.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT).setStrokeStyle(1, 0xfffff);
 }

@@ -57,8 +57,8 @@ export class MainScene extends Phaser.Scene {
       {
         key: 'char11',
         assets: {
-          img: 'public/assets/chars/char11.png',
-          json: 'public/assets/chars/char11.json'
+          img: 'chars/char11.png',
+          json: 'chars/char11.json'
         },
         anims: [
           {
@@ -83,8 +83,8 @@ export class MainScene extends Phaser.Scene {
       {
         key: 'char14',
         assets: {
-          img: 'public/assets/chars/char14.png',
-          json: 'public/assets/chars/char14.json'
+          img: 'chars/char14.png',
+          json: 'chars/char14.json'
         },
         anims: [
           {
@@ -109,6 +109,7 @@ export class MainScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.setPath('assets');
     responsiveScreenHelper(this);
 
     for (const char of this.characters) {
