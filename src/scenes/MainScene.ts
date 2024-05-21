@@ -170,7 +170,6 @@ export class MainScene extends Phaser.Scene {
 
   selectCharacter(character: ICharacter) {
     if (character.owner && !this.isSelectedSkill) {
-      console.log('É seu personagem')
       this.showSkills(character);
       return;
     } else if (!character.owner && this.isSelectedSkill) {
@@ -180,8 +179,6 @@ export class MainScene extends Phaser.Scene {
       console.log('Escolha seu ALVO!');
       return;
     }
-
-    console.log('NÃO é seu personagem', character.key)
   }
 
   showSkills(character: ICharacter) {
