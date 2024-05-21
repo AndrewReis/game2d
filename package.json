@@ -4,9 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build:phaser": "tsc && vite build --config vite/config.prod.ts",
-    "build": "tsc && vite build",
+    "dev": "vite --config vite/config.dev.mjs",
+    "build": "vite build --config vite/config.prod.mjs",
     "preview": "vite preview"
   },
   "engines": {
@@ -14,11 +13,10 @@
   },
   "dependencies": {
     "@discord/embedded-app-sdk": "^1.2.0",
-    "axios": "^1.6.8",
-    "phaser": "^3.55.2",
-    "socket.io-client": "^4.7.5"
+    "phaser": "^3.55.2"
   },
   "devDependencies": {
+    "terser": "^5.31.0",
     "typescript": "^4.9.3",
     "vite": "^4.0.0",
     "vite-plugin-pwa": "^0.14.1"
