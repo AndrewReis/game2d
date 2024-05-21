@@ -1,15 +1,14 @@
 import 'phaser'
 
-// const GAME_WIDTH  = window.innerWidth * window.devicePixelRatio;
-const GAME_WIDTH  = 640;
-// const GAME_HEIGHT = window.innerHeight * window.devicePixelRatio;
-const GAME_HEIGHT = 960;
+const GAME_WIDTH  = window.innerWidth * window.devicePixelRatio;
+// const GAME_WIDTH  = 640;
+const GAME_HEIGHT = window.innerHeight * window.devicePixelRatio;
+// const GAME_HEIGHT = 960;
 const SCALE_RATIO = window.devicePixelRatio / 3;
 
 const ALIGN = {
   centerX: GAME_WIDTH / 2,
   centerY: GAME_HEIGHT / 2,
-  center: GAME_WIDTH / 2,
   left: 0 + 70,
   right: GAME_WIDTH - 70,
   top: 0,
@@ -29,8 +28,8 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
   scale: {
     mode: Phaser.Scale.RESIZE,
     parent: 'phaser-example',
-    width: 640,
-    height: 960,
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
     min: {
         width: 320,
         height: 480

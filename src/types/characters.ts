@@ -15,14 +15,12 @@ export interface ICharacter {
   }>
   skillSelected?: {
     name: string;
-    description: string;
     damage: number;
     cost: number;
   };
   position: { x: number, y: number };
   skills: Array<{
     name: string;
-    description: string;
     damage: number;
     cost: number;
   }>
