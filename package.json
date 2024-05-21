@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "build:phaser": "tsc && vite build --config vite/config.prod.ts",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },

@@ -1,7 +1,7 @@
 // dependencies
 import 'phaser';
 
-import { initiateDiscordSDK, discordSdk } from './utils/discordSdk';
+import { initiateDiscordSDK } from './utils/discordSdk';
 
 import './style.css'
 
