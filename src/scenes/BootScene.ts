@@ -4,7 +4,7 @@ import { Socket, io } from "socket.io-client";
 
 import { responsiveScreenHelper } from '../helpers/responsive-helper';
 
-import { database, ICharacter } from '../database'
+import { ICharacter } from '../types/characters'
 
 interface ITexts {
   txtCurrentTurn: Phaser.GameObjects.Text;
@@ -34,6 +34,7 @@ export class BootScene extends Phaser.Scene {
   public currentTurn: number;
   private socket: Socket;
   public texts: ITexts;
+  public database;
 
   constructor() {
     super('Boot');
@@ -52,16 +53,24 @@ export class BootScene extends Phaser.Scene {
     this.socket = io('http://localhost:3333', {
       transports: ['websocket']
     });
-
-    this.socket.on('connect', () => {
-      console.log('Connected!', this.socket.id);
-    });
   }
 
   preload() {
-    for (const character of database.characters) {
-      this.load.atlas(character.key, character.assets.img, character.assets.json);
-    }
+    responsiveScreenHelper(this);
+    this.socket.on('connect', () => {
+      console.log('Connected!', this.socket.id);
+    });
+
+    this.socket.on('STATE', data => {
+      this.database = data;
+
+      if (this.database.characters.length) {
+        console.log(this.database.characters)
+        for (const character of this.database.characters) {
+          this.load.atlas(character.key, character.assets.img, character.assets.json);
+        }
+      }
+    });
 
     // this.load.on('filecomplete-atlas', (key: string) => {
     //   console.log(`Atlas loaded: ${key}`);
@@ -74,12 +83,10 @@ export class BootScene extends Phaser.Scene {
     // this.load.on('complete', () => {
     //   console.log('All assets loaded');
     // });
-
-    responsiveScreenHelper(this);
   }
 
   create() {
-    for (const character of database.characters) {
+    for (const character of this.database.characters) {
       for (const anim of character.anims) {
         this.anims.create({
           key: anim.key,
@@ -90,7 +97,7 @@ export class BootScene extends Phaser.Scene {
       }
     }
 
-    for (const character of database.characters) {
+    for (const character of this.database.characters) {
       const sprite = this.add.sprite(100, 100, character.key);
       const animIdle = character.anims.find(c => c.key.includes('idle_'));
 

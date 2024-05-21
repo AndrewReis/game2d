@@ -12,6 +12,7 @@
     "node": "v20.9.0"
   },
   "dependencies": {
+    "axios": "^1.6.8",
     "phaser": "^3.55.2",
     "socket.io-client": "^4.7.5"
   },

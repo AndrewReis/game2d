@@ -3,21 +3,25 @@ import 'phaser';
 import './style.css'
 
 // scenes
-import { BootScene }      from './scenes/BootScene';
+import { LoginScene } from './scenes/LoginScene';
+import { LoadingScene } from './scenes/LoadingScene';
+import { HomeScene }  from './scenes/HomeScene';
+import { BootScene }  from './scenes/BootScene';
 
 import { GameConfig } from './config'
 
 export class Game extends Phaser.Game {
-  // private wsConnection: WSConnection;
-
   constructor(config: Phaser.Types.Core.GameConfig) {
     super(config);
 
     // scenes
+    this.scene.add('Login', LoginScene);
+    this.scene.add('Loading', LoadingScene);
+    this.scene.add('Home', HomeScene);
     this.scene.add('Boot', BootScene);
 
     // start
-    this.scene.start('Boot');
+    this.scene.start('Login');
   }
 }
 
