@@ -1,7 +1,8 @@
 import 'phaser';
 
 import { ICharacter } from '../types/characters'
-import { ALIGN } from '../config';
+import { responsiveScreenHelper, useAlign } from '../utils/responsive';
+import { Sprite } from '../models/Sprite';
 
 interface ITexts {
   txtHealth: Phaser.GameObjects.Text;
@@ -10,21 +11,18 @@ interface ITexts {
   txtStamina2: Phaser.GameObjects.Text;
 }
 
-interface ISprites extends Phaser.GameObjects.Sprite {
-  character: ICharacter;
-}
-
 const styleSkillsBtn = {
   fontFamily: 'Arial',
   fontSize: '32px',
   color: '#ffffff',
   align: 'center',
-  fixedWidth: 500,
+  fixedWidth: 70,
+  fixedHeight: 70,
   backgroundColor: '#2d2d2d'
 }
 
 export class MainScene extends Phaser.Scene {
-  public sprites: ISprites[];
+  public sprites: Phaser.GameObjects.Sprite[];
   public currentCharacter: ICharacter;
   public isSelectedSkill: boolean;
   public containerSkills: Phaser.GameObjects.Container;
@@ -106,51 +104,27 @@ export class MainScene extends Phaser.Scene {
     ];
   }
 
+  preload() {
+    responsiveScreenHelper(this);
+  }
+
   create() {
-    const txtNextTurn = this.add.text(ALIGN.centerX - 200, ALIGN.centerY + 200, `Proxímo Turno`, styleSkillsBtn);
+    const { centerX, centerY, top } = useAlign();
+    this.add.text(centerX - 140, top + 50, 'EM DESENVOLVIMENTO', { fontSize: '24px', fontFamily: 'Arial' });
+
+    const txtNextTurn = this.add.text(centerX, centerY, `Proxímo Turno`, styleSkillsBtn);
 
     txtNextTurn.setInteractive();
     txtNextTurn.on('pointerdown', () => this.nextTurn());
 
     for (const character of this.characters) {
-      for (const anim of character.anims) {
-        this.anims.create({
-          key: anim.key,
-          frames: this.anims.generateFrameNames(character.key, { prefix: anim.prefix, suffix: anim.suffix, end: anim.end, zeroPad: anim.zeroPad }),
-          repeat: anim.repeat,
-          frameRate: anim.frameRate
-        });
-      }
-
-      const sprite = this.add.sprite(100, 100, character.key);
-      const animIdle = character.anims.find(c => c.key.includes('idle_'));
-
-      sprite.setInteractive();
-      sprite.flipX = !character.owner;
-      sprite.play(animIdle!.key);
-      sprite.setScale(2);
-      sprite.setPosition(ALIGN.centerX + (character.position.x - 250), ALIGN.centerY);
-
-      sprite.on('pointerdown', () => this.selectCharacter(character));
-
-      const item: ISprites = {} as ISprites;
-      Object.assign(item, { ...sprite, character });
-
-      this.sprites.push(item);
-
-      if (character.owner) {
-        this.texts.txtHealth = this.add.text(sprite.x - 40, sprite.y - 120, `Vida: ${character.health}`);
-        this.texts.txtStamina = this.add.text(sprite.x - 40, sprite.y - 100, `Energia: ${character.energy}`);
-      } else {
-        this.texts.txtHealth2 = this.add.text(sprite.x - 40, sprite.y - 125, `Vida: ${character.health}`);
-        this.texts.txtStamina2 = this.add.text(sprite.x - 40, sprite.y - 100, `Energia: ${character.energy}`);
-      }
+      this.drawSprites(character);
     }
 
     if (this.currentTurnOwner === 'player') {
       this.sprites.forEach(sprite => {
-        if (sprite.character.owner) {
-          this.showSkills(sprite.character); // TODO ajustar quando tiver mais de um char.
+        if (sprite.name === 'isOwner') {
+          this.showSkills((sprite.data.list as ICharacter)); // TODO ajustar quando tiver mais de um char.
         }
       });
     } else {
@@ -172,13 +146,15 @@ export class MainScene extends Phaser.Scene {
   }
 
   showSkills(character: ICharacter) {
+    const { centerX, centerY, bottom, top } = useAlign();
+
     if (this.currentTurnOwner === 'player' && character.owner) {
-      this.containerSkills = this.add.container(ALIGN.centerX - 250, ALIGN.centerY);
+      this.containerSkills = this.add.container(centerX, 10);
 
       character.skills.forEach((skill, index) => {
         const text = this.add.text(
-          50,
-          100 + (50 * index),
+          centerX,
+          10,
           `${skill.name}`,
           styleSkillsBtn
         );
@@ -196,6 +172,11 @@ export class MainScene extends Phaser.Scene {
 
           this.isSelectedSkill = character.owner;
           if (this.isSelectedSkill) {
+            this.sprites.forEach(sprite => {
+              if (sprite.name !== 'isOwner') {
+                sprite.setTint(0xff0000)
+              }
+            });
             this.currentCharacter.skillSelected = skill;
           }
         });
@@ -222,6 +203,7 @@ export class MainScene extends Phaser.Scene {
             target.health -= this.currentCharacter.skillSelected!.damage;
           }
         });
+
         this.nextTurn();
         return;
       }
@@ -236,27 +218,28 @@ export class MainScene extends Phaser.Scene {
 
     if (this.currentTurnOwner === 'player') {
       this.sprites.forEach(sprite => {
-        if (sprite.character.owner) {
-          this.showSkills(sprite.character); // TODO ajustar quando tiver mais de um char.
+        if (sprite.name === 'isOwner') {
+          this.showSkills((sprite.data.list as ICharacter)); // TODO ajustar quando tiver mais de um char.
         }
       });
     } else {
       this.containerSkills.destroy();
       this.sprites.forEach(sprite => {
-        if (!sprite.character.owner) {
-          this.currentCharacter = sprite.character;
+        if (sprite.name !== 'isOwner') {
+          sprite.clearTint();
+          this.currentCharacter = sprite.data.list as ICharacter;
         }
       });
     }
+  }
 
-    for (const char of this.characters) {
-      if (char.owner) {
-        this.texts.txtHealth.setText(`Vida: ${char.health}`);
-        this.texts.txtStamina.setText(`Energia: ${char.energy}`);
-      } else {
-        this.texts.txtHealth2.setText(`Vida: ${char.health}`);
-        this.texts.txtStamina2.setText(`Energia: ${char.energy}`);
-      }
-    }
+  drawSprites(character: ICharacter) {
+    const { centerY, left, right } = useAlign();
+
+    const posX   = character.owner ? left + 60 : right - 60;
+    const sprite = new Sprite(this, character, posX, centerY);
+
+    sprite.on('pointerdown', () => this.selectCharacter(character));
+    this.sprites.push(sprite);
   }
 }
