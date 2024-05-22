@@ -2,6 +2,9 @@ import 'phaser';
 
 import { ICharacter } from '../types/characters'
 
+import { responsiveScreenHelper } from '../utils/responsive';
+
+
 export class BootScene extends Phaser.Scene {
   // temp
   public characters: ICharacter[];
@@ -65,6 +68,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   preload() {
+    responsiveScreenHelper(this);
     this.load.setPath('assets');
 
     for (const char of this.characters) {
