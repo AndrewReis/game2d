@@ -58,8 +58,8 @@ class HealthBar {
 export class Sprite extends Phaser.GameObjects.Sprite {
   private hp: HealthBar;
 
-  constructor(scene: Phaser.Scene, character: ICharacter, x: number, y: number) {
-    super(scene, x, y, character.key);
+  constructor(scene: Phaser.Scene, character: ICharacter) {
+    super(scene, character.position.x, character.position.y, character.key);
 
     this.createAnimations(scene, character);
 
@@ -72,7 +72,6 @@ export class Sprite extends Phaser.GameObjects.Sprite {
 
     const animIdle = character.anims.find(c => c.key.includes('idle_'));
     this.play(animIdle!.key);
-
 
     scene.add.existing(this);
   }
