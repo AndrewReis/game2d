@@ -1,27 +1,18 @@
 import 'phaser';
 
-import { ICharacter, ISkill } from '../types/characters'
+import { IActions, ICharacter, ISkill } from '../types/characters'
 import { Sprite }             from '../models/Sprite';
 
 import { responsiveScreenHelper, useAlign } from '../utils/responsive';
 import { characters }                       from '../utils/fakes';
 
-const styleSkillsBtn = {
-  fontFamily: 'Arial',
-  fontSize: '32px',
-  color: '#ffffff',
-  align: 'center',
-  fixedWidth: 70,
-  fixedHeight: 70,
-  backgroundColor: '#2d2d2d'
-}
 
 export class MainScene extends Phaser.Scene {
   public sprites: Phaser.GameObjects.Sprite[];
   public currentCharacter: Sprite;
-  public skillSelected: ISkill;
   public containerSkills: Phaser.GameObjects.Container;
-
+  public playerActions: IActions;
+  public waitingTargetSelect: boolean;
 
   public currentTurnOwner: 'player' | 'adversary';
   public currentTurn: number;
@@ -33,10 +24,9 @@ export class MainScene extends Phaser.Scene {
     super('Main');
     this.sprites = [];
     this.currentCharacter = {} as Sprite;
-    this.skillSelected = {} as ISkill;
     this.containerSkills = {} as Phaser.GameObjects.Container;
 
-
+    this.waitingTargetSelect = false;
     this.currentTurn = 1;
     this.currentTurnOwner = 'player';
 
@@ -67,30 +57,56 @@ export class MainScene extends Phaser.Scene {
   }
 
   create() {
-    const { centerX, centerY, top } = useAlign();
+    const { centerX, top } = useAlign();
     this.add.text(centerX - 140, top + 50, 'EM DESENVOLVIMENTO', { fontSize: '24px', fontFamily: 'Arial' });
-
-    const txtNextTurn = this.add.text(centerX, centerY, `Proxímo Turno`, styleSkillsBtn);
-
-    txtNextTurn.setInteractive();
-    txtNextTurn.on('pointerdown', () => this.nextTurn());
 
     for (const character of this.characters) {
       this.drawSprites(character);
     }
+
+    this.events.on('skill_selected', (event: ISkill) => this.handleSkillSelected(event));
   }
 
   drawSprites(character: ICharacter) {
     const sprite = new Sprite(this, character);
-
     sprite.on('pointerdown', () => this.selectCharacter(sprite));
     this.sprites.push(sprite);
   }
 
   selectCharacter(sprite: Sprite) {
-    console.log(sprite.data.list.key)
-    this.containerSkills = this.add.container(10, 10);
-    sprite.showAndSelectSkills(this, this.containerSkills)
+    console.log(this.waitingTargetSelect)
+    if (Object.keys(this.containerSkills).length) this.containerSkills.destroy();
+
+    if (!sprite.data.list.owner && this.waitingTargetSelect) {
+      console.log('esse é meu alvo');
+      return;
+    }
+
+    if (sprite.data.list.owner) {
+      this.waitingTargetSelect = false;
+
+      this.sprites.forEach(sprite => {
+        if (!sprite.data.list.owner) {
+          sprite.clearTint()
+        }
+      });
+      
+      this.containerSkills = this.add.container(10, 10);
+      sprite.showSkills(this, this.containerSkills)
+      return
+    }
+  }
+
+  handleSkillSelected(skill: ISkill) {
+    if (skill.target !== 'self') {
+      this.sprites.forEach(sprite => {
+        if (!sprite.data.list.owner) {
+          sprite.setTint(0xff7373)
+        }
+      });
+
+      this.waitingTargetSelect = true;
+    }
   }
 
   nextTurn() {
@@ -98,7 +114,6 @@ export class MainScene extends Phaser.Scene {
     this.currentTurnOwner = this.currentTurnOwner === 'player' ? 'adversary' : 'player';
 
     if (this.currentTurnOwner === 'adversary') {
-      this.skillSelected = {} as ISkill;
       this.containerSkills.destroy();
       this.sprites.forEach(sprite => {
         if (sprite.name !== 'isOwner') {

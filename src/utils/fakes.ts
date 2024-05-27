@@ -26,8 +26,8 @@ for (let index = 0; index < 3; index++) {
     energy: 100,
     owner: true,
     skills: [
-      { name: 'Ataque', damage: 50, cost: 30 },
-      { name: 'Recarregar', damage: 0, cost: 0 },
+      { name: 'Ataque', damage: 50, cost: 30, cooldown: 1, target: 'one-enemy', type: 'melee' },
+      { name: 'Defender', damage: 0, cost: 0, cooldown: 5, target: 'self', type: 'strategic' },
     ]
   });
 }
@@ -55,8 +55,8 @@ for (let index = 0; index < 3; index++) {
     energy: 100,
     owner: false,
     skills: [
-      { name: 'Ataque', damage: 50, cost: 30 },
-      { name: 'Recarregar', damage: 0, cost: 0 },
+      { name: 'Ataque', damage: 50, cost: 30, cooldown: 1, target: 'one-enemy', type: 'melee' },
+      { name: 'Defender', damage: 0, cost: 0, cooldown: 5, target: 'self', type: 'strategic' },
     ]
   });
 }

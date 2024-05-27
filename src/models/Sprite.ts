@@ -91,14 +91,14 @@ export class Sprite extends Phaser.GameObjects.Sprite {
     console.log('SEM ENERGIA', this.data.list.energy)
   }
 
-  public showAndSelectSkills(scene: Phaser.Scene, containerSkills: Phaser.GameObjects.Container) {
+  public showSkills(scene: Phaser.Scene, containerSkills: Phaser.GameObjects.Container) {
     const { centerX, bottom } = useAlign();
 
     this.data.list.skills.forEach((skill: { name: string; }, index: number) => {
       const text = scene.add.text(
-        centerX - (120 * index),
-        bottom - 100,
-        `${skill.name}`,
+        centerX - (180 * index),
+        bottom - 50,
+        `${this.data.list.key}_${skill.name}`,
       );
 
       containerSkills.add(text)

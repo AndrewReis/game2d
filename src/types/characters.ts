@@ -2,6 +2,9 @@ export interface ISkill {
   name: string;
   damage: number;
   cost: number;
+  cooldown: number;
+  type: 'melee' | 'strategic';
+  target: 'self' | 'one-enemy' | 'all-enemy';
 }
 
 export interface ISprite extends Phaser.GameObjects.Sprite {
@@ -29,4 +32,11 @@ export interface ICharacter {
   }>
   position: { x: number, y: number };
   skills: Array<ISkill>
+}
+
+export interface IActions {
+  skill_target: Array<{
+    skill: ISkill;
+    target: ICharacter;
+  }>
 }
