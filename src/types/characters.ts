@@ -1,3 +1,20 @@
+export interface ISkill {
+  name: string;
+  damage: number;
+  cost: number;
+  cooldown: number;
+  type: 'melee' | 'strategic';
+  target: 'self' | 'one-enemy' | 'all-enemy';
+}
+
+export interface ISprite extends Phaser.GameObjects.Sprite {
+  hp: number;
+  damage(amount: number): void;
+  applySkill(skill: ISkill, target: ISprite): void;
+  showSkills(scene: Phaser.Scene): void;
+  createAnimations(scene: Phaser.Scene, character: ICharacter): void;
+}
+
 export interface ICharacter {
   key: string;
   health: number;
@@ -13,17 +30,13 @@ export interface ICharacter {
     zeroPad: number,
     frameRate: number
   }>
-  skillSelected?: {
-    name: string;
-    description: string;
-    damage: number;
-    cost: number;
-  };
   position: { x: number, y: number };
-  skills: Array<{
-    name: string;
-    description: string;
-    damage: number;
-    cost: number;
+  skills: Array<ISkill>
+}
+
+export interface IActions {
+  skill_target: Array<{
+    skill: ISkill;
+    target: ICharacter;
   }>
 }

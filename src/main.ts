@@ -1,30 +1,23 @@
 // dependencies
-import 'phaser';
-import './style.css'
+import { Game, Types } from "phaser";
+
+import '/public/assets/style.css';
+
+import { initiateDiscordSDK } from './utils/discordSdk';
 
 // scenes
-import { LoginScene } from './scenes/LoginScene';
-import { LoadingScene } from './scenes/LoadingScene';
-import { HomeScene }  from './scenes/HomeScene';
-import { BootScene }  from './scenes/BootScene';
+import { BootScene } from './scenes/BootScene';
+import { MainScene } from './scenes/MainScene';
 
+// config
 import { GameConfig } from './config'
 
-export class Game extends Phaser.Game {
-  constructor(config: Phaser.Types.Core.GameConfig) {
-    super(config);
+(async () => {
+  initiateDiscordSDK();
+  const config: Types.Core.GameConfig = {
+    ...GameConfig,
+    scene: [BootScene, MainScene]
+  };
 
-    // scenes
-    this.scene.add('Login', LoginScene);
-    this.scene.add('Loading', LoadingScene);
-    this.scene.add('Home', HomeScene);
-    this.scene.add('Boot', BootScene);
-
-    // start
-    this.scene.start('Login');
-  }
-}
-
-window.addEventListener('load', () => {
-  (window as any)._game = new Game(GameConfig);
-});
+  new Game(config);
+})();
