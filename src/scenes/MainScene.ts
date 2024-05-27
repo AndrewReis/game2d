@@ -1,6 +1,6 @@
 import 'phaser';
 
-import { ICharacter } from '../types/characters'
+import { ICharacter, ISkill } from '../types/characters'
 import { responsiveScreenHelper, useAlign } from '../utils/responsive';
 import { Sprite } from '../models/Sprite';
 
@@ -23,9 +23,11 @@ const styleSkillsBtn = {
 
 export class MainScene extends Phaser.Scene {
   public sprites: Phaser.GameObjects.Sprite[];
-  public currentCharacter: ICharacter;
-  public isSelectedSkill: boolean;
+  public currentCharacter: Sprite;
+  public skillSelected: ISkill;
   public containerSkills: Phaser.GameObjects.Container;
+
+
   public currentTurnOwner: 'player' | 'adversary';
   public currentTurn: number;
   public texts: ITexts;
@@ -36,20 +38,47 @@ export class MainScene extends Phaser.Scene {
   constructor() {
     super('Main');
     this.sprites = [];
-    this.currentCharacter = {} as ICharacter;
-    this.isSelectedSkill = false;
-    this.currentTurn = 1;
-    this.currentTurnOwner = 'adversary';
+    this.currentCharacter = {} as Sprite;
+    this.skillSelected = {} as ISkill;
     this.containerSkills = {} as Phaser.GameObjects.Container;
+
+
+    this.currentTurn = 1;
+    this.currentTurnOwner = 'player';
     this.texts = {
       txtHealth: {} as Phaser.GameObjects.Text,
       txtStamina: {} as Phaser.GameObjects.Text,
       txtHealth2: {} as Phaser.GameObjects.Text,
       txtStamina2: {} as Phaser.GameObjects.Text,
     }
-
     // temp
     this.characters = [
+      {
+        key: 'char11',
+        assets: {
+          img: 'chars/char11.png',
+          json: 'chars/char11.json'
+        },
+        anims: [
+          {
+            key: 'idle_char11',
+            repeat: -1,
+            prefix: 'idle_',
+            suffix: '.png',
+            end: 4,
+            zeroPad: 0,
+            frameRate: 10
+          }
+        ],
+        position: { x: 100, y: 400 },
+        health: 100,
+        energy: 100,
+        owner: true,
+        skills: [
+          { name: 'Ataque', damage: 50, cost: 30 },
+          { name: 'Recarregar', damage: 0, cost: 0 },
+        ]
+      },
       {
         key: 'char11',
         assets: {
@@ -120,126 +149,63 @@ export class MainScene extends Phaser.Scene {
     for (const character of this.characters) {
       this.drawSprites(character);
     }
-
-    if (this.currentTurnOwner === 'player') {
-      this.sprites.forEach(sprite => {
-        if (sprite.name === 'isOwner') {
-          this.showSkills((sprite.data.list as ICharacter)); // TODO ajustar quando tiver mais de um char.
-        }
-      });
-    } else {
-      this.nextTurn();
-    }
-  }
-
-  selectCharacter(character: ICharacter) {
-    if (character.owner && !this.isSelectedSkill) {
-      this.showSkills(character);
-      return;
-    } else if (!character.owner && this.isSelectedSkill) {
-      this.applySkill(character);
-      return;
-    } else if (character.owner && this.isSelectedSkill) {
-      console.log('Escolha seu ALVO!');
-      return;
-    }
-  }
-
-  showSkills(character: ICharacter) {
-    const { centerX, centerY, bottom, top } = useAlign();
-
-    if (this.currentTurnOwner === 'player' && character.owner) {
-      this.containerSkills = this.add.container(centerX, 10);
-
-      character.skills.forEach((skill, index) => {
-        const text = this.add.text(
-          centerX,
-          10,
-          `${skill.name}`,
-          styleSkillsBtn
-        );
-
-        this.containerSkills.add(text);
-
-        this.currentCharacter = character;
-        text.setInteractive();
-        text.on('pointerdown', () => {
-          if (skill.name === 'Recarregar') {
-            this.currentCharacter.skillSelected = skill;
-            this.applySkill(this.currentCharacter);
-            return
-          }
-
-          this.isSelectedSkill = character.owner;
-          if (this.isSelectedSkill) {
-            this.sprites.forEach(sprite => {
-              if (sprite.name !== 'isOwner') {
-                sprite.setTint(0xff0000)
-              }
-            });
-            this.currentCharacter.skillSelected = skill;
-          }
-        });
-      });
-    }
-  }
-
-  applySkill(target: ICharacter) {
-    if (this.currentCharacter.skillSelected) {
-      if (this.currentCharacter.skillSelected.name === 'Recarregar') {
-        this.characters.forEach(char => {
-          if (char.key === this.currentCharacter.key) {
-            char.energy += 20;
-          }
-        })
-        this.nextTurn();
-        return;
-      }
-
-      if (this.currentCharacter.energy >= this.currentCharacter.skillSelected.cost) {
-        this.characters.forEach(char => {
-          if (char.key === this.currentCharacter.key) {
-            char.energy -= this.currentCharacter.skillSelected!.cost;
-            target.health -= this.currentCharacter.skillSelected!.damage;
-          }
-        });
-
-        this.nextTurn();
-        return;
-      }
-    }
-    console.log('ERRO! applySkill to: ', this.currentCharacter, target);
-  }
-
-  nextTurn() {
-    this.currentTurn++
-    this.isSelectedSkill = false;
-    this.currentTurnOwner = this.currentTurnOwner === 'player' ? 'adversary' : 'player';
-
-    if (this.currentTurnOwner === 'player') {
-      this.sprites.forEach(sprite => {
-        if (sprite.name === 'isOwner') {
-          this.showSkills((sprite.data.list as ICharacter)); // TODO ajustar quando tiver mais de um char.
-        }
-      });
-    } else {
-      this.containerSkills.destroy();
-      this.sprites.forEach(sprite => {
-        if (sprite.name !== 'isOwner') {
-          sprite.clearTint();
-          this.currentCharacter = sprite.data.list as ICharacter;
-        }
-      });
-    }
   }
 
   drawSprites(character: ICharacter) {
     const { centerY, left, right } = useAlign();
 
-    const posX   = character.owner ? left + 60 : right - 60;
+    const posX = character.owner ? left + 60 : right - 60;
     const sprite = new Sprite(this, character, posX, centerY);
 
-    sprite.on('pointerdown', () => this.selectCharacter(character));
+    sprite.on('pointerdown', () => this.selectCharacter(sprite));
     this.sprites.push(sprite);
+  }
+
+  selectCharacter(sprite: Sprite) {
+    console.log(sprite.data.list.key)
+    this.containerSkills = this.add.container(10, 10);
+    sprite.showAndSelectSkills(this, this.containerSkills)
+    // if (sprite.data.list.owner && !this.skillSelected.name && this.currentTurnOwner === 'player') {
+    //   this.containerSkills = this.add.container(10, 10);
+    //   sprite.showAndSelectSkills(this, this.containerSkills);
+
+    //   this.events.on('skill_selected', (skill: ISkill) => {
+    //     this.currentCharacter = sprite;
+    //     this.skillSelected = skill;
+    //     this.sprites.forEach(sprite => {
+    //       if (sprite.name !== 'isOwner') {
+    //         sprite.setTint(0xff0000)
+    //       }
+    //     });
+    //   });
+    // } 
+    
+    // if (!sprite.data.list.owner && this.skillSelected.name && this.currentTurnOwner === 'player') {
+    //   this.sprites.forEach(sprite => {
+    //     if (sprite.name !== 'isOwner') {
+    //       sprite.clearTint()
+    //     }
+    //   });
+    //   this.currentCharacter.applySkill(this, this.skillSelected, sprite);
+    // }
+  }
+
+  nextTurn() {
+    this.currentTurn++
+    this.currentTurnOwner = this.currentTurnOwner === 'player' ? 'adversary' : 'player';
+
+    if (this.currentTurnOwner === 'adversary') {
+      this.skillSelected = {} as ISkill;
+      this.containerSkills.destroy();
+      this.sprites.forEach(sprite => {
+        if (sprite.name !== 'isOwner') {
+          this.currentCharacter = sprite.data.list as Sprite;
+        }
+      });
+    }
+  }
+
+  update(): void {
+    this.events.on('next_turn', () => this.nextTurn());
   }
 }
