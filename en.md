@@ -23,3 +23,5 @@ This project is inspired by the classic game Naruto Arena, a game I played a lot
 ## Future Features:
 - Ranking System
 - Online Combat (PvP)
+
+follow the progress here: https://stalwart-snickerdoodle-ec4a38.netlify.app
