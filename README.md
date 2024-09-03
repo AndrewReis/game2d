@@ -3,6 +3,11 @@ Este projeto é inspirado pelo clássico jogo Naruto Arena, um jogo que eu jogue
 
 ## Status: Em Desenvolvimento
 
+## Tecnologias:
+- Vite.js
+- Typescript
+- Phaser 3
+
 ## Principais Funcionalidades
 - Combate por Turnos: Cada jogador controla uma equipe de 3 personagens.
 - Habilidades Especiais: Cada personagem possui habilidades únicas que requerem estratégia para serem usadas no momento certo.
